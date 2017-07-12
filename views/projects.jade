@@ -1,18 +1,14 @@
 extends layout
 
 block content
-    h1= title
-    a(href="http://localhost:3000/projectlist") Project list
-    // Add Project
-    br
-    a(href="http://localhost:3000/addproject") Add New Project
+
     // Wrapper
     #wrapper
 
         // Project LIST
         h3 List
         #pList
-            table
+            table.table
                 thead
                     th Action
                     th Project Name

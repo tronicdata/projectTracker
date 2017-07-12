@@ -56,6 +56,7 @@ fieldset {
 	padding:0; margin:0;
 }
 
+/*
 #pList {
 	margin:0 0 30px 0;
   width:100%;
@@ -82,7 +83,7 @@ fieldset {
 				padding:5px 10px;
 
 			}
-
+*/
 #projectInfo {
   margin-top:30px;
 	width:100%;
@@ -125,4 +126,12 @@ fieldset {
   width: 100%;
   height: 200px;
   padding: 5px;
+}
+
+.linkupdateproject img {
+    width: 30px;
+}
+.linkdeleteproject img {
+    width: 30px;
+    margin-left: 5px;
 }
