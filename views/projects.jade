@@ -1,0 +1,59 @@
+extends layout
+
+block content
+    h1= title
+    p Welcome to our test
+    a(href="http://localhost:3000/projectlist") project list
+    // Add Project
+    br
+    a(href="http://localhost:3000/addproject") Add New Project
+    // Wrapper
+    #wrapper
+
+        // Project INFO
+        #projectInfo
+            h2 Project Info
+            p
+                strong Name:
+                |  <span id='projectInfoName'></span>
+                br
+                strong Status:
+                |  <span id='projectInfoStatus'></span>
+                br
+                strong Reference:
+                |  <textarea readonly id='projectInfoReference'></textarea>
+
+        // /Project INFO
+
+        // Project LIST
+        h2 project List
+        #pList
+            table
+                thead
+                    th ProjectName
+                    th Status
+                    th Delete?
+                    th Edit?
+                tbody
+        // /project LIST
+
+
+        // Update PROJECT
+
+        #updateProject
+            h2 Update Project
+            fieldset
+                label Name:
+                input#editinputProjectName(type='text', placeholder='name')
+                br
+                label Staus:
+                input#editinputProjectStatus(type='text', placeholder='Status')
+                br
+                label Reference:
+                textarea#editinputProjectReference(type='text', placeholder='Reference')
+                br
+
+                button#btnUpdateProject Update Project
+        // /Update PROJECT
+
+    // /WRAPPER

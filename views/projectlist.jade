@@ -1,0 +1,15 @@
+extends layout
+
+block content
+    a(href="http://localhost:3000/addproject") Add New Project
+    h1.
+        Project List
+    ul
+        each project, i in projectlist
+            li
+
+                p= project.name
+                  ul
+                    li
+                      p= project.status
+                      p= project.reference
