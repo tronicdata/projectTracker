@@ -1,13 +1,17 @@
 extends layout
 
 block content
-    a(href="http://localhost:3000/projectlist") See All Projects
+    a(href="/") See All Projects
     h1= title
     form#formAddProject(name="adduser",method="post",action="/addproject")
         input#inputProjectName(type="text", placeholder="name", name="name")
         br
+        input#inputProjectUrl(type="text", placeholder="URL", name="url")
+        br
         input#inputProjectStatus(type="text", placeholder="status", name="status")
         br
         textarea#inputProjectReference(type="text", placeholder="reference", name="reference")
+        br
+        input#inputProjectTags(type="text", placeholder="Tags", name="tags")
         br
         button#btnSubmit(type="submit") submit

@@ -2,17 +2,27 @@ extends layout
 
 block content
     h1= title
-    p Welcome to our test
-    a(href="http://localhost:3000/projectlist") project list
+    a(href="http://localhost:3000/projectlist") Project list
     // Add Project
     br
     a(href="http://localhost:3000/addproject") Add New Project
     // Wrapper
     #wrapper
 
+        // Project LIST
+        h3 List
+        #pList
+            table
+                thead
+                    th Action
+                    th Project Name
+                    th Status
+                tbody
+        // /project LIST
+
         // Project INFO
         #projectInfo
-            h2 Project Info
+            h3 Project Info
             p
                 strong Name:
                 |  <span id='projectInfoName'></span>
@@ -20,37 +30,36 @@ block content
                 strong Status:
                 |  <span id='projectInfoStatus'></span>
                 br
+                strong URL:
+                |  <span readonly id='projectInfoUrl'></span>
+                br
                 strong Reference:
                 |  <textarea readonly id='projectInfoReference'></textarea>
+                br
+                strong URL:
+                |  <span readonly id='projectInfoTags'></span>
 
         // /Project INFO
-
-        // Project LIST
-        h2 project List
-        #pList
-            table
-                thead
-                    th ProjectName
-                    th Status
-                    th Delete?
-                    th Edit?
-                tbody
-        // /project LIST
-
 
         // Update PROJECT
 
         #updateProject
-            h2 Update Project
+            h3 Update Project
             fieldset
                 label Name:
-                input#editinputProjectName(type='text', placeholder='name')
+                input#editinputProjectName(type='text', placeholder='Name')
                 br
-                label Staus:
+                label URL:
+                input#editinputProjectUrl(type='text', placeholder='URL')
+                br
+                label Status:
                 input#editinputProjectStatus(type='text', placeholder='Status')
                 br
                 label Reference:
                 textarea#editinputProjectReference(type='text', placeholder='Reference')
+                br
+                label Tags:
+                input#editinputProjectTags(type='text', placeholder='Tags')
                 br
 
                 button#btnUpdateProject Update Project

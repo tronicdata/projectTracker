@@ -1,7 +1,9 @@
 extends layout
 
 block content
-    a(href="http://localhost:3000/addproject") Add New Project
+    a(href="/addproject") Add New Project
+    br
+    a(href="/") See All Projects
     h1.
         Project List
     ul
@@ -12,4 +14,9 @@ block content
                   ul
                     li
                       p= project.status
+                    li
                       p= project.reference
+                    li
+                      p= project.url
+                    li
+                      p= project.tags

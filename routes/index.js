@@ -3,7 +3,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+  res.render('projects', { title: 'Project Tracker' });
 });
 
 router.get('/user/:id', function(req,res,next){
@@ -96,6 +96,8 @@ router.put('/updateproject/:id', function(req, res){
   var name = req.body.name;
   var status = req.body.status;
   var ref = req.body.reference;
+  var url = req.body.url;
+  var tags = req.body.tags;
 
   // Set our collection
   var collection = db.get('projects');
@@ -104,7 +106,9 @@ router.put('/updateproject/:id', function(req, res){
   collection.insert({
       "name" : name,
       "status" : status,
-      "reference": ref
+      "reference": ref,
+      "url": url,
+      "tags": tags
 
   }, function (err, doc) {
       if (err) {
@@ -128,6 +132,8 @@ router.post('/addproject', function(req, res) {
     var name = req.body.name;
     var status = req.body.status;
     var ref = req.body.reference;
+    var url = req.body.url;
+    var tags = req.body.tags;
 
     // Set our collection
     var collection = db.get('projects');
@@ -136,7 +142,9 @@ router.post('/addproject', function(req, res) {
     collection.insert({
         "name" : name,
         "status" : status,
-        "reference": ref
+        "reference": ref,
+        "url": url,
+        "tags": tags
 
     }, function (err, doc) {
         if (err) {

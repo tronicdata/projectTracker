@@ -5,6 +5,7 @@ var userListData = [];
 $(document).ready(function() {
 
     // Populate the user table on initial page load
+    console.log("here");
     populateTable();
 
     // Username link click

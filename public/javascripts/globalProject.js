@@ -5,6 +5,7 @@ var projectListData = [];
 $(document).ready(function() {
 
     // Populate the Project table on initial page load
+    console.log("here1");
     populateTable();
 
     // Projectname link click
@@ -15,8 +16,6 @@ $(document).ready(function() {
 
     // Add Project button click
     $('#btnUpdateProject').on('click', updateProject);
-
-    $('#updateProject').hide();
 
     // Update Project link click
     $('#pList table tbody').on('click', 'td a.linkupdateproject', updateProjectShow);
@@ -31,16 +30,18 @@ function populateTable() {
     // Empty content string
     var tableContent = '';
 
+    $('#updateProject').hide();
+    $('#projectInfo').hide();
+
     // jQuery AJAX call for JSON
     $.getJSON( '/projects/projectlist', function( data ) {
 
         // For each item in our JSON, add a table row and cells to the content string
         $.each(data, function(){
             tableContent += '<tr>';
+            tableContent += '<td><a href="#" class="linkupdateproject" rel="' + this._id + '">edit</a> || <a href="#" class="linkdeleteproject" rel="' + this._id + '">delete</a></td>';
             tableContent += '<td><a href="#" class="linkshowproject" rel="' + this.name + '">' + this.name + '</a></td>';
             tableContent += '<td>' + this.status + '</td>';
-            tableContent += '<td><a href="#" class="linkdeleteproject" rel="' + this._id + '">delete</a></td>';
-            tableContent += '<td><a href="#" class="linkupdateproject" rel="' + this._id + '">edit</a></td>';
             tableContent += '</tr>';
             // Stick our project data array into a projectlist variable in the global object
             projectListData = data;
@@ -57,6 +58,9 @@ function showProjectInfo(event) {
     // Prevent Link from Firing
     event.preventDefault();
 
+    //hide update section
+    $('#updateProject').hide();
+
     // Retrieve projectname from link rel attribute
     var thisProjectName = $(this).attr('rel');
 
@@ -70,6 +74,10 @@ function showProjectInfo(event) {
     $('#projectInfoName').text(thisProjectObject.name);
     $('#projectInfoStatus').text(thisProjectObject.status);
     $('#projectInfoReference').text(thisProjectObject.reference);
+    $('#projectInfoUrl').text(thisProjectObject.url);
+    $('#projectInfoTags').text(thisProjectObject.tags);
+
+    $('#projectInfo').toggle();
 
 };
 
@@ -117,6 +125,9 @@ function updateProject(event) {
     // Prevent Link from Firing
     event.preventDefault();
 
+    //hide project info
+    $('#projectInfo').hide();
+
     //Get Project ID
     var projectID = $('#btnUpdateProject').attr('rel');
 
@@ -124,7 +135,9 @@ function updateProject(event) {
     var newProject = {
         'name': $('#updateProject fieldset input#editinputProjectName').val(),
         'status': $('#updateProject fieldset input#editinputProjectStatus').val(),
-        'reference': $('#updateProject fieldset textarea#editinputProjectReference').val()
+        'reference': $('#updateProject fieldset textarea#editinputProjectReference').val(),
+        'tags': $('#updateProject fieldset input#editinputProjectTags').val(),
+        'url': $('#updateProject fieldset input#editinputProjectUrl').val()
 
     }
 
@@ -170,6 +183,9 @@ function updateProjectShow(event) {
     // Prevent Link from Firing
     event.preventDefault();
 
+    //hide project info
+    $('#projectInfo').hide();
+
     // Retrieve Projectname from link rel attribute
     var thisProjectName = $(this).attr('rel');
 
@@ -181,12 +197,15 @@ function updateProjectShow(event) {
 
     //Populate update Project Box
     console.log(thisProjectObject.name);
+    console.log(thisProjectObject.tags);
     $('#updateProject fieldset input#editinputProjectName').val(thisProjectObject.name)
     $('#updateProject fieldset input#editinputProjectStatus').val(thisProjectObject.status)
     $('#updateProject fieldset textarea#editinputProjectReference').val(thisProjectObject.reference)
+    $('#updateProject fieldset input#editinputProjectTags').val(thisProjectObject.tags)
+    $('#updateProject fieldset input#editinputProjectUrl').val(thisProjectObject.url)
 
     $('#btnUpdateProject').attr('rel', thisProjectName)
 
 
-    $('#updateProject').show();
+    $('#updateProject').toggle();
 };

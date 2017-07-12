@@ -8,7 +8,11 @@ var bodyParser = require('body-parser');
 // New Code
 var mongo = require('mongodb');
 var monk = require('monk');
-var db = monk('localhost:27017/nodetest1');
+
+// this is where the mongodb is located
+//change the name in order to change what db it is pulling from.
+//previous data is located in nodetest1
+var db = monk('localhost:27017/projectTracker');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
