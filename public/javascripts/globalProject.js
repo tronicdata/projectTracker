@@ -35,7 +35,7 @@ function populateTable() {
 
     // jQuery AJAX call for JSON
     $.getJSON( '/projects/projectlist', function( data ) {
-
+        console.log(data);
         // For each item in our JSON, add a table row and cells to the content string
         $.each(data, function(){
             tableContent += '<tr>';

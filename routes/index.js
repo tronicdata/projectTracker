@@ -98,9 +98,15 @@ router.put('/updateproject/:id', function(req, res){
   var ref = req.body.reference;
   var url = req.body.url;
   var tags = req.body.tags;
+  var logStr = req.body.log;
+
+  var time = callDate();
+
+  var log = [time, logStr];
 
   // Set our collection
   var collection = db.get('projects');
+  var logCollection = db.get('logs');
 
   // Submit to the DB
   collection.insert({
@@ -115,9 +121,22 @@ router.put('/updateproject/:id', function(req, res){
           // If it failed, return error
           res.send("There was a problem adding the information to the database.");
       }
+  });
+
+  // Submit to the DB
+  logCollection.insert({
+      "name" : name,
+      "time" : time,
+      "msg" : logStr
+
+  }, function (err, doc) {
+      if (err) {
+          // If it failed, return error
+          res.send("There was a problem adding the information to the database.");
+      }
       else {
           // And forward to success page
-          res.redirect("projectlist");
+          res.redirect("/");
       }
   });
 })
@@ -134,9 +153,11 @@ router.post('/addproject', function(req, res) {
     var ref = req.body.reference;
     var url = req.body.url;
     var tags = req.body.tags;
+    var time = callDate();
 
     // Set our collection
     var collection = db.get('projects');
+    var logCollection = db.get('logs');
 
     // Submit to the DB
     collection.insert({
@@ -151,9 +172,23 @@ router.post('/addproject', function(req, res) {
             // If it failed, return error
             res.send("There was a problem adding the information to the database.");
         }
+
+    });
+
+    // Submit to the DB
+    logCollection.insert({
+        "name" : name,
+        "time" : time,
+        "msg" : "Project Created!"
+
+    }, function (err, doc) {
+        if (err) {
+            // If it failed, return error
+            res.send("There was a problem adding the information to the database.");
+        }
         else {
             // And forward to success page
-            res.redirect("projectlist");
+            res.redirect("/");
         }
     });
 });
@@ -186,4 +221,15 @@ router.post('/adduser', function(req, res) {
         }
     });
 });
+
+function callDate(){
+  var d = new Date();
+  var year = d.getFullYear();
+  var date = d.getDate();
+  var month = d.getMonth();
+  var hour = d.getHours();
+  var min = d.getMinutes();
+
+  return month + "-" + date + "-" + year + " [" + hour + ":" + min + "]";
+}
 module.exports = router;
