@@ -50,6 +50,22 @@ function populateTable() {
         // Inject the whole content string into our existing HTML table
         $('#pList table tbody').html(tableContent);
     });
+    $.getJSON( '/projects/logs', function( data ) {
+        console.log(data);
+        // For each item in our JSON, add a table row and cells to the content string
+        /*$.each(data, function(){
+            tableContent += '<tr>';
+            tableContent += '<td><a href="#" class="linkupdateproject" rel="' + this._id + '"><img src="/images/pencil_icon.svg" /></a><a href="#" class="linkdeleteproject" rel="' + this._id + '"><img src="images/delete_icon.svg"></a></td>';
+            tableContent += '<td><a href="#" class="linkshowproject" rel="' + this.name + '">' + this.name + '</a></td>';
+            tableContent += '<td>' + this.status + '</td>';
+            tableContent += '</tr>';
+            // Stick our project data array into a projectlist variable in the global object
+            projectListData = data;
+        });*/
+
+        // Inject the whole content string into our existing HTML table
+        //$('#pList table tbody').html(tableContent);
+    });
 };
 
 // Show project Info

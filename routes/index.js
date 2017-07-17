@@ -63,6 +63,18 @@ router.get('/projectlist', function(req, res) {
     });
 });
 
+/* GET Userlist page. */
+router.get('/projects/logs', function(req, res) {
+    var db = req.db;
+    var collection = db.get('logs');
+    collection.find({},{},function(e,docs){
+        /*res.render('projectlist', {
+            "logs" : docs
+        });*/
+        res.json(docs);
+    });
+});
+
 /*
  * DELETE to deleteproject.
  */
