@@ -1,5 +1,6 @@
 // Projectlist data array for filling in info box
 var projectListData = [];
+var logListData = [];
 
 // DOM Ready =============================================================
 $(document).ready(function() {
@@ -52,19 +53,10 @@ function populateTable() {
     });
     $.getJSON( '/projects/logs', function( data ) {
         console.log(data);
-        // For each item in our JSON, add a table row and cells to the content string
-        /*$.each(data, function(){
-            tableContent += '<tr>';
-            tableContent += '<td><a href="#" class="linkupdateproject" rel="' + this._id + '"><img src="/images/pencil_icon.svg" /></a><a href="#" class="linkdeleteproject" rel="' + this._id + '"><img src="images/delete_icon.svg"></a></td>';
-            tableContent += '<td><a href="#" class="linkshowproject" rel="' + this.name + '">' + this.name + '</a></td>';
-            tableContent += '<td>' + this.status + '</td>';
-            tableContent += '</tr>';
-            // Stick our project data array into a projectlist variable in the global object
-            projectListData = data;
-        });*/
 
-        // Inject the whole content string into our existing HTML table
-        //$('#pList table tbody').html(tableContent);
+        //load up loglistdata
+        logListData = data;
+
     });
 };
 
@@ -80,6 +72,8 @@ function showProjectInfo(event) {
     // Retrieve projectname from link rel attribute
     var thisProjectName = $(this).attr('rel');
 
+
+
     // Get Index of object based on id value
     var arrayPosition = projectListData.map(function(arrayItem) { return arrayItem.name; }).indexOf(thisProjectName);
 
@@ -92,6 +86,14 @@ function showProjectInfo(event) {
     $('#projectInfoReference').text(thisProjectObject.reference);
     $('#projectInfoUrl').text(thisProjectObject.url);
     $('#projectInfoTags').text(thisProjectObject.tags);
+
+    //get logID for project
+    console.log(logListData);
+    var logId = thisProjectObject.logId;
+    var logArrayPosition =  logListData.map(function(arrayItem) { return arrayItem.logId; }).indexOf(logId);
+    var thisLogObject = logListData[logArrayPosition];
+
+    $('#projectInfoLogs').text(thisLogObject.time + ' Message= ' + thisLogObject.msg);
 
     $('#projectInfo').toggle();
 
@@ -116,6 +118,7 @@ function deleteProject(event) {
 
             // Check for a successful (blank) response
             if (response.msg === '') {
+              alert('Project Deleted');
             }
             else {
                 alert('Error: ' + response.msg);
@@ -157,6 +160,21 @@ function updateProject(event) {
 
     }
 
+    //load in log items
+    var msg = "";
+    var msgLogInput = $('#updateProject fieldset input#editinputProjectLog').val();
+
+    //if user did not specify a log, then one will be created automatically noting the item was updated
+    if( msgLogInput == "" ){
+      msg = "Project Updated [no msg]";
+    } else {
+      msg = msgLogInput;
+    }
+    var newLog = {
+      'logId' : $('#btnUpdateProject').attr('data-logId'),
+      'msg' : msg
+    }
+
     // Pop up a confirmation dialog
     var confirmation = confirm('Are you sure you want to update this project?');
 
@@ -171,14 +189,33 @@ function updateProject(event) {
             dataType: 'JSON'
         }).done(function( response ) {
 
+
             // Check for a successful (blank) response
             if (response.msg === '') {
-              // Clear the form inputs
-              alert('updated!');
-              $('#updateProject').hide();
+
+              //when the Response is successful then update log.
+              console.log('waiting 3 seconds to post..');
+              setTimeout(function(){postToLogs()}, 15000);
+
             }
             else {
                 alert('Error: ' + response.msg);
+            }
+
+            function postToLogs(){
+              $.ajax({
+                  type: 'POST',
+                  data: newLog,
+                  url: '/addLog',
+                  dataType: 'JSON'
+              }).done(function( responseLog ) {
+                  if (responseLog.msg === '') {
+                    alert('updated!');
+                    $('#updateProject').hide();
+                  } else {
+                    alert('Error: ' + responseLog.msg);
+                  }
+              })
             }
 
             // Update the table
@@ -221,7 +258,18 @@ function updateProjectShow(event) {
     $('#updateProject fieldset input#editinputProjectUrl').val(thisProjectObject.url)
 
     $('#btnUpdateProject').attr('rel', thisProjectName)
+    $('#btnUpdateProject').attr('data-logId', thisProjectObject.logId)
 
 
     $('#updateProject').toggle();
 };
+
+function callDate(d){
+  var year = d.getFullYear();
+  var date = d.getDate();
+  var month = d.getMonth();
+  var hour = d.getHours();
+  var min = d.getMinutes();
+
+  return month + "-" + date + "-" + year + " [" + hour + ":" + min + "]";
+}

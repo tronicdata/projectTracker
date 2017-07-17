@@ -34,6 +34,7 @@ block content
                 br
                 strong URL:
                 |  <span readonly id='projectInfoTags'></span>
+                br
                 strong log:
                 |  <span readonly id='projectInfoLogs'></span>
 
@@ -58,6 +59,9 @@ block content
                 br
                 label Tags:
                 input#editinputProjectTags(type='text', placeholder='Tags')
+                br
+                label Log:
+                input#editinputProjectLog(type='text', placeholder='Logging Item')
                 br
 
                 button#btnUpdateProject Update Project

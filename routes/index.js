@@ -18,6 +18,10 @@ router.get('/newuser', function(req, res) {
 router.get('/addproject', function(req, res) {
     res.render('addproject', { title: 'Add New Project' });
 });
+
+router.get('/addLog', function(req, res) {
+    //res.render('addproject', { title: 'Add New Project' });
+});
 /* GET New User page. */
 router.get('/projectSingle/:id', function(req, res) {
     res.render('projectSingle', { title: 'update specific project' });
@@ -98,6 +102,8 @@ router.put('/projects/updateproject/:id', function(req, res) {
     collection.update({ '_id' : projectToUpdate }, {$set:fieldsToUpdate},function(err) {
         res.send((err === null) ? { msg: '' } : { msg:'error: ' + err });
     });
+
+
 });
 
 router.put('/updateproject/:id', function(req, res){
@@ -153,6 +159,41 @@ router.put('/updateproject/:id', function(req, res){
   });
 })
 
+//When an action is taken, log is updated
+router.post('/addLog', function(req, res) {
+
+    // Set our internal DB variable
+    var db = req.db;
+
+    // Get our form values. These rely on the "name" attributes
+    var msg = req.body.msg;
+    var logId = req.body.logId;
+    var time = new Date();
+
+    // Set our collection    var collection = db.get('projects');
+    var logCollection = db.get('logs');
+
+    //Generate random ID to attach log to specific id's
+    var logId = name + makeid();
+
+    // Submit to the DB
+    logCollection.insert({
+        "time" : time,
+        "msg" : msg,
+        "logId": logId
+
+    }, function (err, doc) {
+        if (err) {
+            // If it failed, return error
+            res.send("There was a problem adding the information to the database.");
+        }
+        else {
+            // And forward to success page
+            res.redirect("/");
+        }
+    });
+});
+
 /* POST to Add User Service */
 router.post('/addproject', function(req, res) {
 
@@ -165,11 +206,14 @@ router.post('/addproject', function(req, res) {
     var ref = req.body.reference;
     var url = req.body.url;
     var tags = req.body.tags;
-    var time = callDate();
+    var time = new Date();
 
     // Set our collection
     var collection = db.get('projects');
     var logCollection = db.get('logs');
+
+    //Generate random ID to attach log to specific id's
+    var logId = name + makeid();
 
     // Submit to the DB
     collection.insert({
@@ -177,7 +221,8 @@ router.post('/addproject', function(req, res) {
         "status" : status,
         "reference": ref,
         "url": url,
-        "tags": tags
+        "tags": tags,
+        "logId": logId
 
     }, function (err, doc) {
         if (err) {
@@ -189,9 +234,9 @@ router.post('/addproject', function(req, res) {
 
     // Submit to the DB
     logCollection.insert({
-        "name" : name,
         "time" : time,
-        "msg" : "Project Created!"
+        "msg" : "Project Created!",
+        "logId": logId
 
     }, function (err, doc) {
         if (err) {
@@ -234,14 +279,16 @@ router.post('/adduser', function(req, res) {
     });
 });
 
-function callDate(){
-  var d = new Date();
-  var year = d.getFullYear();
-  var date = d.getDate();
-  var month = d.getMonth();
-  var hour = d.getHours();
-  var min = d.getMinutes();
 
-  return month + "-" + date + "-" + year + " [" + hour + ":" + min + "]";
+
+function makeid() {
+  var text = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (var i = 0; i < 5; i++)
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+  return text;
 }
+
 module.exports = router;
