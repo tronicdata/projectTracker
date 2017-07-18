@@ -99,9 +99,25 @@ router.put('/projects/updateproject/:id', function(req, res) {
     var collection = db.get('projects');
     var projectToUpdate = req.params.id;
     var fieldsToUpdate = req.body;
-    collection.update({ '_id' : projectToUpdate }, {$set:fieldsToUpdate},function(err) {
+    var time = new Date();
+    var logTime = {
+      'msg' : fieldsToUpdate.log,
+      'time' : time
+    }
+
+    delete fieldsToUpdate.log;
+
+    collection.update(
+      { '_id' : projectToUpdate },
+      {
+        $set:fieldsToUpdate,
+        $push: {'log': logTime}
+      },
+      {upsert: true},
+      function(err) {
         res.send((err === null) ? { msg: '' } : { msg:'error: ' + err });
-    });
+      }
+    );
 
 
 });
@@ -212,6 +228,14 @@ router.post('/addproject', function(req, res) {
     var collection = db.get('projects');
     var logCollection = db.get('logs');
 
+    var logObj = [
+      {
+        'msg': 'Project Created!',
+        'time': time
+      }
+    ];
+
+
     //Generate random ID to attach log to specific id's
     var logId = name + makeid();
 
@@ -222,17 +246,20 @@ router.post('/addproject', function(req, res) {
         "reference": ref,
         "url": url,
         "tags": tags,
-        "logId": logId
+        "log": logObj
 
     }, function (err, doc) {
         if (err) {
             // If it failed, return error
             res.send("There was a problem adding the information to the database.");
+        } else {
+          res.redirect("/");
         }
 
     });
 
     // Submit to the DB
+    /*
     logCollection.insert({
         "time" : time,
         "msg" : "Project Created!",
@@ -247,7 +274,7 @@ router.post('/addproject', function(req, res) {
             // And forward to success page
             res.redirect("/");
         }
-    });
+    });*/
 });
 
 /* POST to Add User Service */

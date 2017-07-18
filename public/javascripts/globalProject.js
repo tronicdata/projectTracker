@@ -51,13 +51,15 @@ function populateTable() {
         // Inject the whole content string into our existing HTML table
         $('#pList table tbody').html(tableContent);
     });
-    $.getJSON( '/projects/logs', function( data ) {
+
+    //took out logs collection; added logs to project obj
+    /*$.getJSON( '/projects/logs', function( data ) {
         console.log(data);
 
         //load up loglistdata
         logListData = data;
 
-    });
+    });*/
 };
 
 // Show project Info
@@ -87,14 +89,25 @@ function showProjectInfo(event) {
     $('#projectInfoUrl').text(thisProjectObject.url);
     $('#projectInfoTags').text(thisProjectObject.tags);
 
-    //get logID for project
-    console.log(logListData);
-    var logId = thisProjectObject.logId;
-    var logArrayPosition =  logListData.map(function(arrayItem) { return arrayItem.logId; }).indexOf(logId);
-    var thisLogObject = logListData[logArrayPosition];
 
-    $('#projectInfoLogs').text(thisLogObject.time + ' Message= ' + thisLogObject.msg);
+    //load in log history
+    var logsObj = thisProjectObject.log;
+    var logHTML = "<div class='logHistory'><ul>";
+    logsObj.map(function(item){
+      var timeRaw = item.time;
+      console.log(timeRaw);
+      var msg = item.msg;
+      logHTML += "<li>";
+      logHTML += "<span class='logHistory__time'>" + callDate(timeRaw) + "</span>";
+      logHTML += " <span class='logHistory__msg'>" + msg + "</span>";
 
+      logHTML += "</li>";
+    })
+    logHTML += '</ul></div>';
+
+    $('#projectInfoLogs').html(logHTML);
+
+    //show/hide project info table
     $('#projectInfo').toggle();
 
 };
@@ -170,10 +183,14 @@ function updateProject(event) {
     } else {
       msg = msgLogInput;
     }
+    /*
     var newLog = {
       'logId' : $('#btnUpdateProject').attr('data-logId'),
       'msg' : msg
-    }
+    }*/
+
+    //add log message to project object
+    newProject['log'] = msg;
 
     // Pop up a confirmation dialog
     var confirmation = confirm('Are you sure you want to update this project?');
@@ -194,15 +211,16 @@ function updateProject(event) {
             if (response.msg === '') {
 
               //when the Response is successful then update log.
-              console.log('waiting 3 seconds to post..');
-              setTimeout(function(){postToLogs()}, 15000);
+              //console.log('waiting 3 seconds to post..');
+              //setTimeout(function(){postToLogs()}, 15000);
+              alert('Success! Project Updated!');
 
             }
             else {
                 alert('Error: ' + response.msg);
             }
 
-            function postToLogs(){
+            /*function postToLogs(){
               $.ajax({
                   type: 'POST',
                   data: newLog,
@@ -216,7 +234,7 @@ function updateProject(event) {
                     alert('Error: ' + responseLog.msg);
                   }
               })
-            }
+            }*/
 
             // Update the table
             populateTable();
@@ -265,6 +283,7 @@ function updateProjectShow(event) {
 };
 
 function callDate(d){
+  var d = new Date(d);
   var year = d.getFullYear();
   var date = d.getDate();
   var month = d.getMonth();
