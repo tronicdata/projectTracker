@@ -88,6 +88,7 @@ function showProjectInfo(event) {
     $('#projectInfoReference').text(thisProjectObject.reference);
     $('#projectInfoUrl').text(thisProjectObject.url);
     $('#projectInfoTags').text(thisProjectObject.tags);
+    $('#projectInfoState').text(thisProjectObject.state);
 
 
     //load in log history
@@ -170,7 +171,8 @@ function updateProject(event) {
         'reference': $('#updateProject fieldset textarea#editinputProjectReference').val(),
         'tags': $('#updateProject fieldset input#editinputProjectTags').val(),
         'url': $('#updateProject fieldset input#editinputProjectUrl').val(),
-        'archive': $('#editinputProjectArchive').prop('checked')
+        'archive': $('#editinputProjectArchive').prop('checked'),
+        'state': $('#updateProject fieldset select#editinputProjectState').val()
     }
 
     //load in log items
@@ -260,6 +262,15 @@ function updateProjectShow(event) {
     } else {
       $('#updateProject fieldset input#editinputProjectArchive').prop('checked', false);
     }
+
+    var $state = $('#updateProject fieldset select#editinputProjectState');
+    var stateValue = thisProjectObject.state;
+    if( stateValue != 'new'){
+      $state.val(thisProjectObject.state);
+    } else {
+      $state.val('new');
+    }
+
     $('#btnUpdateProject').attr('rel', thisProjectName);
 
 
