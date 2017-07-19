@@ -183,11 +183,6 @@ function updateProject(event) {
     } else {
       msg = msgLogInput;
     }
-    /*
-    var newLog = {
-      'logId' : $('#btnUpdateProject').attr('data-logId'),
-      'msg' : msg
-    }*/
 
     //add log message to project object
     newProject['log'] = msg;
@@ -211,30 +206,16 @@ function updateProject(event) {
             if (response.msg === '') {
 
               //when the Response is successful then update log.
-              //console.log('waiting 3 seconds to post..');
-              //setTimeout(function(){postToLogs()}, 15000);
               alert('Success! Project Updated!');
+
+              //clear log msg inputs
+              $('#updateProject fieldset input#editinputProjectLog').val("");
+
 
             }
             else {
                 alert('Error: ' + response.msg);
             }
-
-            /*function postToLogs(){
-              $.ajax({
-                  type: 'POST',
-                  data: newLog,
-                  url: '/addLog',
-                  dataType: 'JSON'
-              }).done(function( responseLog ) {
-                  if (responseLog.msg === '') {
-                    alert('updated!');
-                    $('#updateProject').hide();
-                  } else {
-                    alert('Error: ' + responseLog.msg);
-                  }
-              })
-            }*/
 
             // Update the table
             populateTable();
@@ -275,8 +256,7 @@ function updateProjectShow(event) {
     $('#updateProject fieldset input#editinputProjectTags').val(thisProjectObject.tags)
     $('#updateProject fieldset input#editinputProjectUrl').val(thisProjectObject.url)
 
-    $('#btnUpdateProject').attr('rel', thisProjectName)
-    $('#btnUpdateProject').attr('data-logId', thisProjectObject.logId)
+    $('#btnUpdateProject').attr('rel', thisProjectName);
 
 
     $('#updateProject').toggle();
