@@ -1,5 +1,6 @@
 // Projectlist data array for filling in info box
 var projectListData = [];
+var logListData = [];
 
 // DOM Ready =============================================================
 $(document).ready(function() {
@@ -35,7 +36,7 @@ function populateTable() {
 
     // jQuery AJAX call for JSON
     $.getJSON( '/projects/projectlist', function( data ) {
-
+        console.log(data);
         // For each item in our JSON, add a table row and cells to the content string
         $.each(data, function(){
             tableContent += '<tr>';
@@ -50,6 +51,15 @@ function populateTable() {
         // Inject the whole content string into our existing HTML table
         $('#pList table tbody').html(tableContent);
     });
+
+    //took out logs collection; added logs to project obj
+    /*$.getJSON( '/projects/logs', function( data ) {
+        console.log(data);
+
+        //load up loglistdata
+        logListData = data;
+
+    });*/
 };
 
 // Show project Info
@@ -64,6 +74,8 @@ function showProjectInfo(event) {
     // Retrieve projectname from link rel attribute
     var thisProjectName = $(this).attr('rel');
 
+
+
     // Get Index of object based on id value
     var arrayPosition = projectListData.map(function(arrayItem) { return arrayItem.name; }).indexOf(thisProjectName);
 
@@ -77,6 +89,25 @@ function showProjectInfo(event) {
     $('#projectInfoUrl').text(thisProjectObject.url);
     $('#projectInfoTags').text(thisProjectObject.tags);
 
+
+    //load in log history
+    var logsObj = thisProjectObject.log;
+    var logHTML = "<div class='logHistory'><ul>";
+    logsObj.map(function(item){
+      var timeRaw = item.time;
+      console.log(timeRaw);
+      var msg = item.msg;
+      logHTML += "<li>";
+      logHTML += "<span class='logHistory__time'>" + callDate(timeRaw) + "</span>";
+      logHTML += " <span class='logHistory__msg'>" + msg + "</span>";
+
+      logHTML += "</li>";
+    })
+    logHTML += '</ul></div>';
+
+    $('#projectInfoLogs').html(logHTML);
+
+    //show/hide project info table
     $('#projectInfo').toggle();
 
 };
@@ -100,6 +131,7 @@ function deleteProject(event) {
 
             // Check for a successful (blank) response
             if (response.msg === '') {
+              alert('Project Deleted');
             }
             else {
                 alert('Error: ' + response.msg);
@@ -141,6 +173,20 @@ function updateProject(event) {
 
     }
 
+    //load in log items
+    var msg = "";
+    var msgLogInput = $('#updateProject fieldset input#editinputProjectLog').val();
+
+    //if user did not specify a log, then one will be created automatically noting the item was updated
+    if( msgLogInput == "" ){
+      msg = "Project Updated [no msg]";
+    } else {
+      msg = msgLogInput;
+    }
+
+    //add log message to project object
+    newProject['log'] = msg;
+
     // Pop up a confirmation dialog
     var confirmation = confirm('Are you sure you want to update this project?');
 
@@ -155,11 +201,17 @@ function updateProject(event) {
             dataType: 'JSON'
         }).done(function( response ) {
 
+
             // Check for a successful (blank) response
             if (response.msg === '') {
-              // Clear the form inputs
-              alert('updated!');
-              $('#updateProject').hide();
+
+              //when the Response is successful then update log.
+              alert('Success! Project Updated!');
+
+              //clear log msg inputs
+              $('#updateProject fieldset input#editinputProjectLog').val("");
+
+
             }
             else {
                 alert('Error: ' + response.msg);
@@ -204,8 +256,26 @@ function updateProjectShow(event) {
     $('#updateProject fieldset input#editinputProjectTags').val(thisProjectObject.tags)
     $('#updateProject fieldset input#editinputProjectUrl').val(thisProjectObject.url)
 
-    $('#btnUpdateProject').attr('rel', thisProjectName)
+    $('#btnUpdateProject').attr('rel', thisProjectName);
 
 
     $('#updateProject').toggle();
 };
+
+function callDate(d){
+  var d = new Date(d);
+  var year = d.getFullYear();
+  var date = d.getDate();
+  var month = d.getMonth();
+  var hour = d.getHours();
+  var min = d.getMinutes();
+  var sec= d.getSeconds();
+
+  return month + "-" + date + "-" + year + " [" + hour + ":" + min + ":" + addZero(sec) + "]";
+}
+function addZero(i) {
+    if (i < 10) {
+        i = "0" + i;
+    }
+    return i;
+}
