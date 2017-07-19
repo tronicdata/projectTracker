@@ -246,6 +246,7 @@ router.post('/addproject', function(req, res) {
         "reference": ref,
         "url": url,
         "tags": tags,
+        "archive": false,
         "log": logObj
 
     }, function (err, doc) {
