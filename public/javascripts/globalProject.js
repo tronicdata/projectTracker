@@ -39,7 +39,13 @@ function populateTable() {
         console.log(data);
         // For each item in our JSON, add a table row and cells to the content string
         $.each(data, function(){
-            tableContent += '<tr>';
+            if(this.state != 'new'){
+              tableContent += '<tr class="projectState__' + this.state + '">';
+            } else {
+              tableContent += '<tr>';
+            }
+
+
             tableContent += '<td><a href="#" class="linkupdateproject" rel="' + this._id + '"><img src="/images/pencil_icon.svg" /></a><a href="#" class="linkdeleteproject" rel="' + this._id + '"><img src="images/delete_icon.svg"></a></td>';
             tableContent += '<td><a href="#" class="linkshowproject" rel="' + this.name + '">' + this.name + '</a></td>';
             tableContent += '<td>' + this.status + '</td>';

@@ -138,3 +138,12 @@ fieldset {
 .updateInput--widthAuto {
   width: auto !important;
 }
+.projectState__active {
+  background-color: #daf3da;
+}
+.projectState__waiting {
+  background-color: #fbffde;
+}
+.projectState__completed {
+  background-color: #b9e2ff;
+}
