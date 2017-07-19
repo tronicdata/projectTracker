@@ -289,6 +289,13 @@ function callDate(d){
   var month = d.getMonth();
   var hour = d.getHours();
   var min = d.getMinutes();
+  var sec= d.getSeconds();
 
-  return month + "-" + date + "-" + year + " [" + hour + ":" + min + "]";
+  return month + "-" + date + "-" + year + " [" + hour + ":" + min + ":" + addZero(sec) + "]";
+}
+function addZero(i) {
+    if (i < 10) {
+        i = "0" + i;
+    }
+    return i;
 }
