@@ -135,3 +135,6 @@ fieldset {
     width: 30px;
     margin-left: 5px;
 }
+.updateInput--widthAuto {
+  width: auto !important;
+}

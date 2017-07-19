@@ -169,8 +169,8 @@ function updateProject(event) {
         'status': $('#updateProject fieldset input#editinputProjectStatus').val(),
         'reference': $('#updateProject fieldset textarea#editinputProjectReference').val(),
         'tags': $('#updateProject fieldset input#editinputProjectTags').val(),
-        'url': $('#updateProject fieldset input#editinputProjectUrl').val()
-
+        'url': $('#updateProject fieldset input#editinputProjectUrl').val(),
+        'archive': $('#editinputProjectArchive').prop('checked')
     }
 
     //load in log items
@@ -248,14 +248,18 @@ function updateProjectShow(event) {
     var thisProjectObject = projectListData[arrayPosition];
 
     //Populate update Project Box
-    console.log(thisProjectObject.name);
-    console.log(thisProjectObject.tags);
     $('#updateProject fieldset input#editinputProjectName').val(thisProjectObject.name)
     $('#updateProject fieldset input#editinputProjectStatus').val(thisProjectObject.status)
     $('#updateProject fieldset textarea#editinputProjectReference').val(thisProjectObject.reference)
     $('#updateProject fieldset input#editinputProjectTags').val(thisProjectObject.tags)
     $('#updateProject fieldset input#editinputProjectUrl').val(thisProjectObject.url)
 
+    //check or uncheck archive option
+    if( thisProjectObject.archive ){
+      $('#updateProject fieldset input#editinputProjectArchive').prop('checked', true);
+    } else {
+      $('#updateProject fieldset input#editinputProjectArchive').prop('checked', false);
+    }
     $('#btnUpdateProject').attr('rel', thisProjectName);
 
 
