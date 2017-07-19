@@ -26,6 +26,9 @@ block content
                 strong Status:
                 |  <span id='projectInfoStatus'></span>
                 br
+                strong State:
+                |  <span id='projectInfoState'></span>
+                br
                 strong URL:
                 |  <span readonly id='projectInfoUrl'></span>
                 br
@@ -50,6 +53,13 @@ block content
                 br
                 label URL:
                 input#editinputProjectUrl(type='text', placeholder='URL')
+                br
+                label State:
+                select#editinputProjectState(value='new')
+                  option(value='new') New
+                  option(value='active') Active
+                  option(value='waiting') Waiting
+                  option(value='completed') Completed
                 br
                 label Status:
                 input#editinputProjectStatus(type='text', placeholder='Status')

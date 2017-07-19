@@ -247,6 +247,7 @@ router.post('/addproject', function(req, res) {
         "url": url,
         "tags": tags,
         "archive": false,
+        "state": "new",
         "log": logObj
 
     }, function (err, doc) {
