@@ -35,7 +35,7 @@ function populateTable() {
     $('#projectInfo').hide();
 
     // jQuery AJAX call for JSON
-    $.getJSON( '/projects/projectlist', function( data ) {
+    $.getJSON( '/projects/projectList', function( data ) {
         console.log(data);
         // For each item in our JSON, add a table row and cells to the content string
         $.each(data, function(){
@@ -47,7 +47,7 @@ function populateTable() {
 
 
             tableContent += '<td><a href="#" class="linkupdateproject" rel="' + this._id + '"><img src="/images/pencil_icon.svg" /></a><a href="#" class="linkdeleteproject" rel="' + this._id + '"><img src="images/delete_icon.svg"></a></td>';
-            tableContent += '<td><a href="#" class="linkshowproject" rel="' + this.name + '">' + this.name + '</a></td>';
+            tableContent += '<td><a href="#" class="linkshowproject" rel="' + this.title + '">' + this.title + '</a></td>';
             tableContent += '<td>' + this.status + '</td>';
             tableContent += '</tr>';
             // Stick our project data array into a projectlist variable in the global object
@@ -83,13 +83,13 @@ function showProjectInfo(event) {
 
 
     // Get Index of object based on id value
-    var arrayPosition = projectListData.map(function(arrayItem) { return arrayItem.name; }).indexOf(thisProjectName);
+    var arrayPosition = projectListData.map(function(arrayItem) { return arrayItem.title; }).indexOf(thisProjectName);
 
     // Get our project Object
     var thisProjectObject = projectListData[arrayPosition];
 
     //Populate Info Box
-    $('#projectInfoName').text(thisProjectObject.name);
+    $('#projectInfoName').text(thisProjectObject.title);
     $('#projectInfoStatus').text(thisProjectObject.status);
     $('#projectInfoReference').text(thisProjectObject.reference);
     $('#projectInfoPurpose').text(thisProjectObject.purpose);
@@ -120,7 +120,7 @@ function showProjectInfo(event) {
     //show/hide project info table
     $('#projectInfo').show();
 
-    location.href = location.origin + "#projectInfo";
+    location.href = location.origin + location.pathname + "#projectInfo";
 
 };
 
@@ -177,7 +177,7 @@ function updateProject(event) {
 
     // If it is, compile all Project info into one object
     var newProject = {
-        'name': $('#updateProject fieldset input#editinputProjectName').val(),
+        'title': $('#updateProject fieldset input#editinputProjectName').val(),
         'status': $('#updateProject fieldset input#editinputProjectStatus').val(),
         'reference': $('#updateProject fieldset textarea#editinputProjectReference').val(),
         'purpose': $('#updateProject fieldset input#editinputProjectPurpose').val(),
@@ -217,7 +217,7 @@ function updateProject(event) {
             dataType: 'JSON'
         }).done(function( response ) {
 
-
+            console.log(response);
             // Check for a successful (blank) response
             if (response.msg === '') {
 
@@ -264,7 +264,7 @@ function updateProjectShow(event) {
     var thisProjectObject = projectListData[arrayPosition];
 
     //Populate update Project Box
-    $('#updateProject fieldset input#editinputProjectName').val(thisProjectObject.name)
+    $('#updateProject fieldset input#editinputProjectName').val(thisProjectObject.title)
     $('#updateProject fieldset input#editinputProjectStatus').val(thisProjectObject.status)
     $('#updateProject fieldset textarea#editinputProjectReference').val(thisProjectObject.reference)
     $('#updateProject fieldset input#editinputProjectTags').val(thisProjectObject.tags)
@@ -292,14 +292,14 @@ function updateProjectShow(event) {
 
 
     $('#updateProject').show();
-    location.href = location.origin + "#updateProject";
+    location.href = location.origin + location.pathname + "#updateProject";
 };
 
 function callDate(d){
   var d = new Date(d);
   var year = d.getFullYear();
   var date = d.getDate();
-  var month = d.getMonth();
+  var month = d.getMonth() + 1;
   var hour = d.getHours();
   var min = d.getMinutes();
   var sec= d.getSeconds();

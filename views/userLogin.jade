@@ -1,0 +1,24 @@
+extends layout
+
+block content
+    h1= title
+    a(href="http://localhost:3000/projectlist") project list
+    // Wrapper
+    #wrapper
+
+        // USER INFO
+        #userLogin
+            form#formUserLogin(name="userLogin",method="post",action="/")
+                input#inputUserName(type="text", placeholder="email", name="logemail")
+                input#inputUserPassword(type="text", placeholder="password", name="logpassword")
+                button#btnSubmit(type="submit") submit
+
+        #userRegister
+            form#formAddUser(name="addUser", method="post", action="/")
+                input#registerUserEmail(type="text", name="email", placeholder="E-Mail")
+                input#registerUsername(type="text", name="username", placeholder="Username")
+                input#registerUserPassword(type="text", name="password", placeholder="password")
+                input#registerUserPasswordConf(type="text", name="passwordConf", placeholder="Confirm Password")
+                button#btnSubmit(type="submit") Register
+
+    // /WRAPPER

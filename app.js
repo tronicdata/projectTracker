@@ -4,20 +4,43 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var mongoose = require('mongoose');
+var session = require('express-session');
+var MongoStore = require('connect-mongo')(session);
 
 // New Code
 var mongo = require('mongodb');
-var monk = require('monk');
 
-// this is where the mongodb is located
-//change the name in order to change what db it is pulling from.
-//previous data is located in nodetest1
-var db = monk('localhost:27017/projectTracker');
+// Removing Monk
+//var monk = require('monk');
+//var db = monk('localhost:27017/projectTracker');
+
+//connect mongoose to mongo
+mongoose.connect('mongodb://localhost:27017/projectTracker');
+var db = mongoose.connection;
+
+//handle mongo error
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function () {
+  // we're connected!
+});
+
+
 
 var index = require('./routes/index');
-var users = require('./routes/users');
+//var users = require('./routes/users');
 
 var app = express();
+
+//use sessions for tracking logins
+app.use(session({
+  secret: 'work hard',
+  resave: true,
+  saveUninitialized: false,
+  store: new MongoStore({
+    mongooseConnection: db
+  })
+}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -33,19 +56,14 @@ app.use(cookieParser());
 //tells express that the public folder is all static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Make our db accessible to our router
-app.use(function(req,res,next){
-    req.db = db;
-    next();
-});
-
 app.use(function (req, res, next){
   console.log('Time', Date.now())
   next()
 })
 
+
 app.use('/', index);
-app.use('/users', users);
+//app.use('/users', users);
 //app.use(express.static('public'));
 
 

@@ -113,6 +113,7 @@ function addUser(event) {
 
                 // Clear the form inputs
                 $('#addUser fieldset input').val('');
+                console.log('user added!');
 
                 // Update the table
                 populateTable();
