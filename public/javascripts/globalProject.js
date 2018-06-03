@@ -92,6 +92,9 @@ function showProjectInfo(event) {
     $('#projectInfoName').text(thisProjectObject.name);
     $('#projectInfoStatus').text(thisProjectObject.status);
     $('#projectInfoReference').text(thisProjectObject.reference);
+    $('#projectInfoPurpose').text(thisProjectObject.purpose);
+    $('#projectInfoOutcome').text(thisProjectObject.outcome);
+    $('#projectInfoBrainstorming').text(thisProjectObject.brainstorming);
     $('#projectInfoUrl').text(thisProjectObject.url);
     $('#projectInfoTags').text(thisProjectObject.tags);
     $('#projectInfoState').text(thisProjectObject.state);
@@ -115,7 +118,9 @@ function showProjectInfo(event) {
     $('#projectInfoLogs').html(logHTML);
 
     //show/hide project info table
-    $('#projectInfo').toggle();
+    $('#projectInfo').show();
+
+    location.href = location.origin + "#projectInfo";
 
 };
 
@@ -175,6 +180,9 @@ function updateProject(event) {
         'name': $('#updateProject fieldset input#editinputProjectName').val(),
         'status': $('#updateProject fieldset input#editinputProjectStatus').val(),
         'reference': $('#updateProject fieldset textarea#editinputProjectReference').val(),
+        'purpose': $('#updateProject fieldset input#editinputProjectPurpose').val(),
+        'outcome': $('#updateProject fieldset input#editinputProjectOutcome').val(),
+        'brainstorming': $('#updateProject fieldset textarea#editinputProjectBrainstorming').val(),
         'tags': $('#updateProject fieldset input#editinputProjectTags').val(),
         'url': $('#updateProject fieldset input#editinputProjectUrl').val(),
         'archive': $('#editinputProjectArchive').prop('checked'),
@@ -261,6 +269,9 @@ function updateProjectShow(event) {
     $('#updateProject fieldset textarea#editinputProjectReference').val(thisProjectObject.reference)
     $('#updateProject fieldset input#editinputProjectTags').val(thisProjectObject.tags)
     $('#updateProject fieldset input#editinputProjectUrl').val(thisProjectObject.url)
+    $('#updateProject fieldset input#editinputProjectPurpose').val(thisProjectObject.purpose)
+    $('#updateProject fieldset input#editinputProjectOutcome').val(thisProjectObject.outcome)
+    $('#updateProject fieldset textarea#editinputProjectBrainstorming').val(thisProjectObject.brainstorming)
 
     //check or uncheck archive option
     if( thisProjectObject.archive ){
@@ -280,7 +291,8 @@ function updateProjectShow(event) {
     $('#btnUpdateProject').attr('rel', thisProjectName);
 
 
-    $('#updateProject').toggle();
+    $('#updateProject').show();
+    location.href = location.origin + "#updateProject";
 };
 
 function callDate(d){
