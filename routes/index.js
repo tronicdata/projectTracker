@@ -1,9 +1,11 @@
 var express = require('express');
 var router = express.Router();
+var User = require('../models/user');
+var Project = require('../models/project');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('projects', { title: 'Project Tracker' });
+  res.render('userLogin', { title: 'Login' });
 });
 
 router.get('/user/:id', function(req,res,next){
@@ -38,286 +40,314 @@ router.get('/userlist', function(req, res) {
     });
 });
 /* GET Userlist page. */
-router.get('/projects/projectlist', function(req, res) {
-    var db = req.db;
+router.get('/projects/projectlist', function(req, res, next) {
+    /*var db = req.db;
     var collection = db.get('projects');
     collection.find({},{},function(e,docs){
         res.json(docs);
+    });*/
+    User.findById(req.session.userId)
+    .exec(function (error, user) {
+      if (error) {
+        return next(error);
+      } else {
+        if (user === null) {
+          var err = new Error('Not authorized! Go back!');
+          err.status = 400;
+          return next(err);
+        } else {
+            Project.find({ userId: req.session.userId })
+            .exec(function (error, docs) {
+              if (error) {
+                return next(error);
+              } else {
+                
+                return res.json(docs);
+                
+              }
+            });
+        }
+      }
     });
 });
 /* GET Userlist page. */
-router.get('/projects', function(req, res) {
-    var db = req.db;
+router.get('/projects', function(req, res, next) {
+    /*var db = req.db;
+    console.log(req);
     var collection = db.get('projects');
     collection.find({},{},function(e,docs){
       res.render('projects', {
-          "projects" : docs
+          "projects" : docs,
       });
+    });*/
+    User.findById(req.session.userId)
+    .exec(function (error, user) {
+      if (error) {
+        return next(error);
+      } else {
+        if (user === null) {
+          var err = new Error('Not authorized! Go back!');
+          err.status = 400;
+          return next(err);
+        } else {
+            Project.find({ userId: req.session.userId })
+            .exec(function (error, docs) {
+              if (error) {
+                return next(error);
+              } else {
+                
+                return res.render('projects', {
+                    "projects": docs
+                });
+                
+              }
+            });
+        }
+      }
     });
+    
 });
 
-/* GET Userlist page. */
+/* GET projectlist page. */
 router.get('/projectlist', function(req, res) {
-    var db = req.db;
-    var collection = db.get('projects');
-    collection.find({},{},function(e,docs){
-        res.render('projectlist', {
-            "projectlist" : docs
-        });
+    User.findById(req.session.userId)
+    .exec(function (error, user) {
+      if (error) {
+        return next(error);
+      } else {
+        if (user === null) {
+          var err = new Error('Not authorized! Go back!');
+          err.status = 400;
+          return next(err);
+        } else {
+            Project.find({ userId: req.session.userId })
+            .exec(function (error, docs) {
+              if (error) {
+                return next(error);
+              } else {
+                
+                return res.render('projectlist', {
+                    "projectlist": docs
+                });
+                
+              }
+            });
+        }
+      }
     });
 });
 
-/* GET Userlist page. */
-router.get('/projects/logs', function(req, res) {
-    var db = req.db;
-    var collection = db.get('logs');
-    collection.find({},{},function(e,docs){
-        /*res.render('projectlist', {
-            "logs" : docs
-        });*/
-        res.json(docs);
-    });
-});
+
+
+//User Login Data
+//POST route for updating data
+router.post('/', function (req, res, next) {
+    // confirm that user typed same password twice
+    if (req.body.password !== req.body.passwordConf) {
+      var err = new Error('Passwords do not match.');
+      err.status = 400;
+      res.send("passwords dont match");
+      return next(err);
+    }
+  
+    if (req.body.email &&
+      req.body.username &&
+      req.body.password &&
+      req.body.passwordConf) {
+  
+      var userData = {
+        email: req.body.email,
+        username: req.body.username,
+        password: req.body.password,
+        passwordConf: req.body.passwordConf,
+      }
+  
+      User.create(userData, function (error, user) {
+        if (error) {
+          return next(error);
+        } else {
+          req.session.userId = user._id;
+          return res.redirect('/profile');
+        }
+      });
+  
+    } else if (req.body.logemail && req.body.logpassword) {
+      User.authenticate(req.body.logemail, req.body.logpassword, function (error, user) {
+        if (error || !user) {
+          var err = new Error('Wrong email or password.');
+          err.status = 401;
+          return next(err);
+        } else {
+          req.session.userId = user._id;
+          return res.redirect('/profile');
+        }
+      });
+    } else {
+      var err = new Error('All fields required.');
+      err.status = 400;
+      return next(err);
+    }
+  })
+  
+  // GET route after registering
+  router.get('/profile', function (req, res, next) {
+    User.findById(req.session.userId)
+      .exec(function (error, user) {
+        if (error) {
+          return next(error);
+        } else {
+          if (user === null) {
+            var err = new Error('Not authorized! Go back!');
+            err.status = 400;
+            return next(err);
+          } else {
+           
+            return  res.render('userProfile', { user: user });
+          }
+        }
+      });
+  });
+  
+  // GET for logout logout
+  router.get('/logout', function (req, res, next) {
+    if (req.session) {
+      // delete session object
+      req.session.destroy(function (err) {
+        if (err) {
+          return next(err);
+        } else {
+          return res.redirect('/');
+        }
+      });
+    }
+  });
+
+
+
 
 /*
  * DELETE to deleteproject.
  */
 router.delete('/projects/deleteproject/:id', function(req, res) {
-    var db = req.db;
-    var collection = db.get('projects');
-    var projectToDelete = req.params.id;
-    collection.remove({ '_id' : projectToDelete }, function(err) {
-        res.send((err === null) ? { msg: '' } : { msg:'error: ' + err });
+    User.findById(req.session.userId)
+    .exec(function (error, user) {
+      if (error) {
+        return next(error);
+      } else {
+        if (user === null) {
+          var err = new Error('Not authorized! Go back!');
+          err.status = 400;
+          return next(err);
+        } else {
+            Project.find()
+            .exec(function (error, docs) {
+              if (error) {
+                return next(error);
+              } else {
+            
+                Project.findByIdAndRemove( req.params.id, function(){
+                    res.send((error === null) ? { msg: '' } : { msg:'error: ' + error });
+                } );
+                
+              }
+            });
+        }
+      }
     });
 });
 
 /*
  * PUT to updateproject.
  */
-router.put('/projects/updateproject/:id', function(req, res) {
-    var db = req.db;
-    var collection = db.get('projects');
-    var projectToUpdate = req.params.id;
+router.put('/projects/updateproject/:id', function(req, res, next) {
     var fieldsToUpdate = req.body;
+
     var time = new Date();
     var logTime = {
-      'msg' : fieldsToUpdate.log,
-      'time' : time
+        'msg' : fieldsToUpdate.log,
+        'time' : time
     }
 
     delete fieldsToUpdate.log;
 
-    collection.update(
-      { '_id' : projectToUpdate },
-      {
-        $set:fieldsToUpdate,
-        $push: {'log': logTime}
-      },
-      {upsert: true},
-      function(err) {
-        res.send((err === null) ? { msg: '' } : { msg:'error: ' + err });
-      }
-    );
-
-
-});
-
-router.put('/updateproject/:id', function(req, res){
-  // Set our internal DB variable
-  var db = req.db;
-
-  // Get our form values. These rely on the "name" attributes
-  var name = req.body.name;
-  var status = req.body.status;
-  var ref = req.body.reference;
-  var url = req.body.url;
-  var tags = req.body.tags;
-  var logStr = req.body.log;
-
-  var time = callDate();
-
-  var log = [time, logStr];
-
-  // Set our collection
-  var collection = db.get('projects');
-  var logCollection = db.get('logs');
-
-  // Submit to the DB
-  collection.insert({
-      "name" : name,
-      "status" : status,
-      "reference": ref,
-      "url": url,
-      "tags": tags
-
-  }, function (err, doc) {
-      if (err) {
-          // If it failed, return error
-          res.send("There was a problem adding the information to the database.");
-      }
-  });
-
-  // Submit to the DB
-  logCollection.insert({
-      "name" : name,
-      "time" : time,
-      "msg" : logStr
-
-  }, function (err, doc) {
-      if (err) {
-          // If it failed, return error
-          res.send("There was a problem adding the information to the database.");
-      }
-      else {
-          // And forward to success page
-          res.redirect("/");
-      }
-  });
-})
-
-//When an action is taken, log is updated
-router.post('/addLog', function(req, res) {
-
-    // Set our internal DB variable
-    var db = req.db;
-
-    // Get our form values. These rely on the "name" attributes
-    var msg = req.body.msg;
-    var logId = req.body.logId;
-    var time = new Date();
-
-    // Set our collection    var collection = db.get('projects');
-    var logCollection = db.get('logs');
-
-    //Generate random ID to attach log to specific id's
-    var logId = name + makeid();
-
-    // Submit to the DB
-    logCollection.insert({
-        "time" : time,
-        "msg" : msg,
-        "logId": logId
-
-    }, function (err, doc) {
-        if (err) {
-            // If it failed, return error
-            res.send("There was a problem adding the information to the database.");
-        }
-        else {
-            // And forward to success page
-            res.redirect("/");
-        }
-    });
-});
-
-/* POST to Add User Service */
-router.post('/addproject', function(req, res) {
-
-    // Set our internal DB variable
-    var db = req.db;
-
-    // Get our form values. These rely on the "name" attributes
-    var name = req.body.name;
-    var status = req.body.status;
-    var ref = req.body.reference;
-    var url = req.body.url;
-    var tags = req.body.tags;
-    var time = new Date();
-
-    // Set our collection
-    var collection = db.get('projects');
-    var logCollection = db.get('logs');
-
-    var logObj = [
-      {
-        'msg': 'Project Created!',
-        'time': time
-      }
-    ];
-
-
-    //Generate random ID to attach log to specific id's
-    var logId = name + makeid();
-
-    // Submit to the DB
-    collection.insert({
-        "name" : name,
-        "status" : status,
-        "reference": ref,
-        "url": url,
-        "tags": tags,
-        "archive": false,
-        "state": "new",
-        "log": logObj
-
-    }, function (err, doc) {
-        if (err) {
-            // If it failed, return error
-            res.send("There was a problem adding the information to the database.");
+    User.findById(req.session.userId)
+    .exec(function (error, user) {
+      if (error) {
+        return next(error);
+      } else {
+        if (user === null) {
+          var err = new Error('Not authorized! Go back!');
+          err.status = 400;
+          return next(err);
         } else {
-          res.redirect("/");
+            Project.find()
+            .exec(function (error, docs) {
+              if (error) {
+                return next(error);
+              } else {
+            
+                Project.findByIdAndUpdate(
+                    req.params.id,
+                    {
+                        $set: fieldsToUpdate,
+                        $push: {"log": logTime}
+                    }, function (error, project) {
+                    if (error) {
+                        return next(error);
+                    } else {
+                        res.send((error === null) ? { msg: '' } : { msg:'error: ' + error });
+                    }
+                });
+                
+              }
+            });
         }
-
+      }
     });
 
-    // Submit to the DB
-    /*
-    logCollection.insert({
-        "time" : time,
-        "msg" : "Project Created!",
-        "logId": logId
-
-    }, function (err, doc) {
-        if (err) {
-            // If it failed, return error
-            res.send("There was a problem adding the information to the database.");
-        }
-        else {
-            // And forward to success page
-            res.redirect("/");
-        }
-    });*/
 });
 
-/* POST to Add User Service */
-router.post('/adduser', function(req, res) {
-
-    // Set our internal DB variable
-    var db = req.db;
-
-    // Get our form values. These rely on the "name" attributes
-    var userName = req.body.username;
-    var userEmail = req.body.useremail;
-
-    // Set our collection
-    var collection = db.get('usercollection');
-
-    // Submit to the DB
-    collection.insert({
-        "username" : userName,
-        "email" : userEmail
-    }, function (err, doc) {
-        if (err) {
-            // If it failed, return error
-            res.send("There was a problem adding the information to the database.");
+/* POST to Add Project Service */
+router.post('/addproject', function(req, res, next) {
+    User.findById(req.session.userId)
+    .exec(function (error, user) {
+      if (error) {
+        return next(error);
+      } else {
+        if (user === null) {
+          var err = new Error('Not authorized! Go back!');
+          err.status = 400;
+          return next(err);
+        } else {
+            Project.find()
+            .exec(function (error, docs) {
+              if (error) {
+                return next(error);
+              } else {
+                
+                var projectData = {
+                    userId: req.session.userId,
+                    title: req.body.title,
+                    url: req.body.url,
+                    status: "new",
+                    reference: req.body.reference,
+                    tags: req.body.tags,
+                }
+            
+                Project.create(projectData, function (error, project) {
+                if (error) {
+                    return next(error);
+                } else {
+                    return res.redirect('/projects');
+                }
+                });
+                
+              }
+            });
         }
-        else {
-            // And forward to success page
-            res.redirect("userlist");
-        }
+      }
     });
+    
 });
-
-
-
-function makeid() {
-  var text = "";
-  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-  for (var i = 0; i < 5; i++)
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-  return text;
-}
 
 module.exports = router;

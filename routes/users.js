@@ -1,5 +1,14 @@
 var express = require('express');
 var router = express.Router();
+var bodyParser = require('body-parser');
+
+
+
+/* GET home page. */
+router.get('/', function(req, res, next) {
+    console.log(req);
+    res.render('index', { title: 'Login' });
+  });
 
 /* GET users listing. */
 router.get('/userlist', function(req, res) {

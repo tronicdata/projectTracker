@@ -8,13 +8,23 @@ block content
         each project, i in projectlist
             li
 
-                p= project.name
+                p= project.title
                   ul
                     li
                       p= project.status
+                    li
+                      p= project.purpose
+                    li
+                      p= project.outcome
+                    li
+                      p= project.state
+                    li
+                      p= project.brainstorming
                     li
                       p= project.reference
                     li
                       p= project.url
                     li
                       p= project.tags
+                    li
+                      p= project.log

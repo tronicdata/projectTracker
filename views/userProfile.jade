@@ -1,0 +1,19 @@
+extends layout
+
+block content
+    h1= title
+    p User Profile
+    #wrapper
+
+        // USER INFO
+        #userInfo
+            h2 User Info
+            p
+                strong Name:
+                    span#userInfoName= user.username
+                br
+                strong Email:
+                    span#userInfoEmail= user.email
+              
+
+    // /WRAPPER
