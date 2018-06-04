@@ -109,7 +109,7 @@ router.get('/projects', function(req, res, next) {
 });
 
 /* GET projectlist page. */
-router.get('/projectlist', function(req, res) {
+router.get('/projectlist', function(req, res, next) {
     User.findById(req.session.userId)
     .exec(function (error, user) {
       if (error) {
