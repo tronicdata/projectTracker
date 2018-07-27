@@ -20,6 +20,10 @@ router.get('/newuser', function(req, res) {
 router.get('/addproject', function(req, res) {
     res.render('addproject', { title: 'Add New Project' });
 });
+/* GET New User page. */
+router.get('/todo', function(req, res) {
+    res.render('todo', { title: 'To Do List' });
+});
 
 router.get('/addLog', function(req, res) {
     //res.render('addproject', { title: 'Add New Project' });
