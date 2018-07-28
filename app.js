@@ -16,13 +16,14 @@ var mongo = require('mongodb');
 //var db = monk('localhost:27017/projectTracker');
 
 //connect mongoose to mongo
-mongoose.connect('mongodb://localhost:27017/projectTracker');
+mongoose.connect('mongodb://127.0.0.1:27017/projectTracker');
 var db = mongoose.connection;
 
 //handle mongo error
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {
-  // we're connected!
+console.log('LOGGED INTO THE DB');  
+// we're connected!
 });
 
 
@@ -90,7 +91,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.render('error', {error: err, message: res.locals.message});
 });
 
 module.exports = app;

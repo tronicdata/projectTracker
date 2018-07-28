@@ -161,9 +161,12 @@ router.post('/', function (req, res, next) {
         password: req.body.password,
         passwordConf: req.body.passwordConf,
       }
-  
+   
+      console.log('suppposed to be!');
       User.create(userData, function (error, user) {
         if (error) {
+	console.log('come type of error!');
+	console.log(error);
           return next(error);
         } else {
           req.session.userId = user._id;
@@ -172,7 +175,7 @@ router.post('/', function (req, res, next) {
       });
   
     } else if (req.body.logemail && req.body.logpassword) {
-      User.authenticate(req.body.logemail, req.body.logpassword, function (error, user) {
+	User.authenticate(req.body.logemail, req.body.logpassword, function (error, user) {
         if (error || !user) {
           var err = new Error('Wrong email or password.');
           err.status = 401;
