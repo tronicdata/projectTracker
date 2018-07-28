@@ -22,8 +22,10 @@ var db = mongoose.connection;
 //handle mongo error
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {
+  
 console.log('LOGGED INTO THE DB');  
 // we're connected!
+
 });
 
 
