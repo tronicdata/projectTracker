@@ -38,6 +38,9 @@ block content
                 strong URL:
                 |  <span readonly id='projectInfoUrl'></span>
                 br
+                strong Todos:
+                |  <ul id='projectTodos'></ul>
+                br
                 strong Brainstorming:
                 |  <textarea readonly id='projectInfoBrainstorming'></textarea>
                 br
@@ -88,6 +91,28 @@ block content
                 br
                 label Log:
                 input#editinputProjectLog(type='text', placeholder='Logging Item')
+                br
+                label Todo:
+                    ul.projectTodos
+                    form(method='post', action='/todo/create')
+                        input#editinputProjectTodo(type='text', placeholder='Task Title', name="taskTitle")
+                        input#projectId(type="text", name="projectId", readonly)
+                        label difficulty
+                        select(label='difficulty', name='difficulty')
+                            option(value="1") 1
+                            option(value="2") 2
+                            option(value="3") 3
+                        label priority
+                        select(label='priority', name='priority')
+                            option(value="1") 1
+                            option(value="2") 2
+                            option(value="3") 3
+                        select.form-control(name='context')
+                            option(value="home") home
+                            option(value="work") work
+                            option(value="errand") errand
+                        span.input-group-btn
+                            input.btn.btn-success(type='submit', value='Add Todo')
                 br
                 label Archive:
                 input#editinputProjectArchive.updateInput--widthAuto(type='checkbox')

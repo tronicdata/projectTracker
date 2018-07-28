@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
 var Project = require('../models/project');
+var Todo = require('../models/todo');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -43,6 +44,158 @@ router.get('/userlist', function(req, res) {
         });
     });
 });
+
+//Get todo List
+router.get('/todo/todoList', function(req, res, next) {
+
+  User.findById(req.session.userId)
+  .exec(function (error, user) {
+    if (error) {
+      return next(error);
+    } else {
+      if (user === null) {
+        var err = new Error('Not authorized! Go back!');
+        err.status = 400;
+        return next(err);
+      } else {
+          Todo.find({ userId: req.session.userId }).sort({ priority: 1})
+          .exec(function (error, docs) {
+            if (error) {
+              return next(error);
+            } else {
+              
+              return res.json(docs);
+              
+            }
+          });
+      }
+    }
+  });
+});
+//Get todo List
+router.get('/todo/todoList/:id', function(req, res, next) {
+
+  User.findById(req.session.userId)
+  .exec(function (error, user) {
+    if (error) {
+      return next(error);
+    } else {
+      if (user === null) {
+        var err = new Error('Not authorized! Go back!');
+        err.status = 400;
+        return next(err);
+      } else {
+          Todo.find({ userId: req.session.userId, projectId: req.params.id }).sort({ priority: 1})
+          .exec(function (error, docs) {
+            if (error) {
+              return next(error);
+            } else {
+              
+              return res.json(docs);
+              
+            }
+          });
+      }
+    }
+  });
+});
+//Get todo List
+router.post('/todo/create', function(req, res, next) {
+
+  User.findById(req.session.userId)
+  .exec(function (error, user) {
+    if (error) {
+      return next(error);
+    } else {
+      if (user === null) {
+        var err = new Error('Not authorized! Go back!');
+        err.status = 400;
+        return next(err);
+      } else {
+            var todoData = {
+              userId: req.session.userId,
+              taskTitle: req.body.taskTitle,
+              difficulty: req.body.difficulty,
+              state: "new",
+              projectId: req.body.projectId ? req.body.projectId : "",
+              priority: req.body.priority,
+              created_at: new Date(),
+              context: req.body.context
+          }
+          Todo.create( todoData, function (error, project) {
+            if (error) {
+                return next(error);
+            } else {
+                return res.redirect('back');
+            }
+          });
+      }
+    }
+  });
+});
+
+//Destroy Todo
+router.delete('/todo/destroy/:id', function(req, res, next) {
+
+  User.findById(req.session.userId)
+  .exec(function (error, user) {
+    if (error) {
+      return next(error);
+    } else {
+      if (user === null) {
+        var err = new Error('Not authorized! Go back!');
+        err.status = 400;
+        return next(err);
+      } else {
+          Todo.find({ userId: req.session.userId })
+          .exec(function (error, docs) {
+            if (error) {
+              return next(error);
+            } else {
+              console.log(req.params.id);
+              Todo.findByIdAndRemove( req.params.id, function(){
+                res.send((error === null) ? { msg: '' } : { msg:'error: ' + error });
+            } );
+              
+              
+            }
+          });
+      }
+    }
+  });
+});
+
+//edit todo
+router.post('/todo/edit/:id', function(req, res, next) {
+
+  User.findById(req.session.userId)
+  .exec(function (error, user) {
+    if (error) {
+      return next(error);
+    } else {
+      if (user === null) {
+        var err = new Error('Not authorized! Go back!');
+        err.status = 400;
+        return next(err);
+      } else {
+          Todo.find({ userId: req.session.userId })
+          .exec(function (error, docs) {
+            if (error) {
+              return next(error);
+            } else {
+              Todo.findOneAndUpdate({ _id: req.params.id }, {content: req.body.content}, function(err, todo){
+                res.redirect('/todos');
+              });
+            } 
+              return res.json(docs);
+              
+            
+          });
+      }
+    }
+  });
+});
+
 /* GET Userlist page. */
 router.get('/projects/projectlist', function(req, res, next) {
     /*var db = req.db;

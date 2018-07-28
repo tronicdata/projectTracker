@@ -8,6 +8,8 @@ var TodoSchema = new mongoose.Schema({
    difficulty: Number,
    context: String,
    state: String,
+   updated_at: Date,
+   created_at: Date,
    archive: Boolean
   });
 

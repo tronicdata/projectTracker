@@ -1,6 +1,7 @@
 // Projectlist data array for filling in info box
 var projectListData = [];
 var logListData = [];
+var todoList = [];
 
 // DOM Ready =============================================================
 $(document).ready(function() {
@@ -8,6 +9,7 @@ $(document).ready(function() {
     // Populate the Project table on initial page load
     console.log("here1");
     populateTable();
+    populateTodo();
 
     // Projectname link click
    $('#pList table tbody').on('click', 'td a.linkshowproject', showProjectInfo);
@@ -15,6 +17,8 @@ $(document).ready(function() {
     // Delete Project link click
     $('#pList table tbody').on('click', 'td a.linkdeleteproject', deleteProject);
 
+    //Delete Todo click
+    $(document).on('click', '.todoDelete', deleteTodo);
     // Add Project button click
     $('#btnUpdateProject').on('click', updateProject);
 
@@ -67,7 +71,53 @@ function populateTable() {
 
     });*/
 };
+// Fill table with data
+function populateTodo() {
 
+    // Empty content string
+    var tableContent = '';
+
+    // jQuery AJAX call for JSON
+    $.getJSON( '/todo/todoList', function( data ) {
+        console.log(data);
+        // For each item in our JSON, add a table row and cells to the content string
+        $.each(data, function(){
+
+            tableContent += "<li>" + this.taskTitle + " || " + this.difficulty + " || <a href='#' class='todoDelete' rel='" + this._id + "'>DELETE</a></li>";
+            
+            // Stick our project data array into a projectlist variable in the global object
+            todoList = data;
+        });
+
+        // Inject the whole content string into our existing HTML table
+        $('.todoList').html(tableContent);
+    });
+
+   
+};
+
+//deleteTodo
+function deleteTodo(event){
+    event.preventDefault();
+    console.log($(this).attr('rel'));
+    $.ajax({
+        type: 'DELETE',
+        url: '/todo/destroy/' + $(this).attr('rel')
+    }).done(function( response ) {
+
+        // Check for a successful (blank) response
+        if (response.msg === '') {
+          alert('Todo Deleted');
+        }
+        else {
+            alert('Error: ' + response.msg);
+        }
+
+        // Update the table
+        populateTodo();
+
+    });
+}
 // Show project Info
 function showProjectInfo(event) {
 
@@ -99,6 +149,51 @@ function showProjectInfo(event) {
     $('#projectInfoTags').text(thisProjectObject.tags);
     $('#projectInfoState').text(thisProjectObject.state);
 
+    
+    $.ajax({
+        type: 'GET',
+        url: '/todo/todoList/' + thisProjectObject._id,
+        dataType: 'JSON'
+    }).done(function( response ) {
+
+        console.log(response);
+
+        if( response.length > 0 ){
+            var html = "";
+            $(response).each(function(i, thisTodoObj){
+                var title = thisTodoObj.taskTitle,
+                    context = thisTodoObj.context,
+                    priority = thisTodoObj.priority,
+                    difficulty = thisTodoObj.difficulty;
+                console.log(title);
+                html += "<li>" + title + " || " + priority + " || " + context + " || " + difficulty + "</li>";
+            })
+            console.log(html);
+            $('#projectTodos').html( html );
+        } else {
+            $('#projectTodos').html( "" );
+        }
+
+    });
+
+    /*var todoIndex = todoList.map(function(arrayItem){return arrayItem.projectId; }).indexOf(thisProjectObject._id);
+
+    var thisTodoObj;
+    if( todoIndex != -1 ){
+        thisTodoObj = todoList[todoIndex];
+    }
+    
+
+    if( thisTodoObj ){
+        var title = thisTodoObj.taskTitle,
+            context = thisTodoObj.context,
+            priority = thisTodoObj.priority,
+            difficulty = thisTodoObj.difficulty,
+            html = "";
+        
+        html += "<li>" + title + " || " + priority + " || " + context + " || " + difficulty + "</li>";
+        $('#projectTodos')
+    }*/
 
     //load in log history
     var logsObj = thisProjectObject.log;
@@ -272,6 +367,32 @@ function updateProjectShow(event) {
     $('#updateProject fieldset input#editinputProjectPurpose').val(thisProjectObject.purpose)
     $('#updateProject fieldset input#editinputProjectOutcome').val(thisProjectObject.outcome)
     $('#updateProject fieldset textarea#editinputProjectBrainstorming').val(thisProjectObject.brainstorming)
+    $('#updateProject fieldset input#projectId').val(thisProjectObject._id)
+
+    //add Todos
+    $.ajax({
+        type: 'GET',
+        url: '/todo/todoList/' + thisProjectObject._id,
+        dataType: 'JSON'
+    }).done(function( response ) {
+
+        if( response.length > 0 ){
+            var html = "";
+            $(response).each(function(i, thisTodoObj){
+                var title = thisTodoObj.taskTitle,
+                    context = thisTodoObj.context,
+                    priority = thisTodoObj.priority,
+                    difficulty = thisTodoObj.difficulty;
+
+                html += "<li>" + title + " || " + priority + " || " + context + " || " + difficulty + " <a href='#' rel='" + thisTodoObj._id + "' class='todoDelete'>Delete</a></li>";
+            })
+
+            $('.projectTodos').html( html );
+        } else {
+            $('.projectTodos').html( "" );
+        }
+
+    });
 
     //check or uncheck archive option
     if( thisProjectObject.archive ){
